@@ -1,4 +1,4 @@
-# meteor-idea-wrap-server-api-method
+# meteor-issue-3675-Meteor.methods-wrapup-idea
 
 This is the demonstration of an idea for API wrap up to make Meteor.methods easier to use.
 
