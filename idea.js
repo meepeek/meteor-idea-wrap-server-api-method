@@ -47,6 +47,9 @@ if (Meteor.isServer) {
 
 if (Meteor.isClient) {
     Meteor.call('apiList', null, function (e, r) {
-        console.log('You may call these methods with Meteor.call\n', r.join('\n'));
+        Session.set('methodList', r);
+    });
+    Template.hello.helpers({
+        methodList: function() { return Session.get('methodList'); }
     });
 }
