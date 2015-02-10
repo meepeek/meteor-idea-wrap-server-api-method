@@ -38,18 +38,41 @@ if (Meteor.isServer) {
         return wrap;
     }
 
-    wrapApi.apiList = function () {
-        return _.keys(wrapApi);
-    };
 
     Meteor.methods(wrapApi);
+    Meteor.methods({
+        list: function () {
+            return _.keys(wrapApi);
+        }
+    });
 }
 
 if (Meteor.isClient) {
-    Meteor.call('apiList', null, function (e, r) {
+    Meteor.call('list', null, function (e, r) {
         Session.set('methodList', r);
+
+        var finalResult = {};
+        _.each(r, function (v) {
+            var vSplit = v.split('.');
+            var p = finalResult;
+            for (var i in vSplit) {
+                if (i == vSplit.length - 1) {
+                    p[vSplit[i]] = function(o, cb) {
+                        Meteor.call(v, o, cb);
+                    };
+                } else {
+                    if (!p[vSplit[i]]) p[vSplit[i]] = {};
+                    p = p[vSplit[i]];
+                }
+            }
+        });
+        window.api = finalResult.api;
+        Meteor.api = finalResult.api;
+        console.log('window.api :', window.api);
     });
     Template.hello.helpers({
-        methodList: function() { return Session.get('methodList'); }
+        methodList: function () {
+            return Session.get('methodList');
+        }
     });
 }
